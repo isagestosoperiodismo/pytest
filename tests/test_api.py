@@ -62,3 +62,29 @@ def test_create_user_and_order_with_json(tmp_path):
     assert order["total"] == 180.0
     assert order["discount_applied"] is True
 
+
+def test_get_user_validation_not_found(tmp_path):
+    json_path = str(tmp_path / "api_test.json")
+    client = TestClient(app)
+
+    resp = client.get(f"/users/someuser", params={"db_path": json_path})
+    assert resp.status_code == 404
+    data = resp.json()
+    assert "detail" in data
+
+
+def test_get_user_success(tmp_path):
+    json_path = str(tmp_path / "api_test.json")
+    client = TestClient(app)
+
+    # create user
+    resp = client.post("/users", json={"username": "ana", "email": "ana@test.com"}, params={"db_path": json_path})
+    assert resp.status_code == 200
+
+    resp = client.get("/users/ana", params={"db_path": json_path})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert isinstance(data.get("id"), int)
+    assert isinstance(data.get("username"), str)
+    assert "email" in data
+

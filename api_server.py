@@ -50,6 +50,15 @@ def list_users(db_path: Optional[str] = Query("data/users.json")):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/users/{username}")
+def get_user(username: str, db_path: Optional[str] = Query("data/users.json")):
+    db = OrderDatabase(db_path)
+    user = db.get_user_by_username(username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
 @app.post("/orders")
 def create_order(order: OrderCreate, db_path: Optional[str] = Query("orders.db")):
     try:
