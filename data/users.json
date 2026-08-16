@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "ana_dev",
+      "email": "ana@test.com"
+    },
+    {
+      "id": 2,
+      "username": "pedro_qa",
+      "email": "pedro@test.com"
+    },
+    {
+      "id": 3,
+      "username": "carlos_dev",
+      "email": "carlos@test.com"
+    }
+  ],
+  "orders": [],
+  "next_user_id": 4,
+  "next_order_id": 1
+}

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
+from typing import Optional, List
 
 from models import OrderCreate, UserCreate
 from order_service import calculate_and_save_order
@@ -15,6 +15,11 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "API is running"}
+
+
 @app.post("/users")
 def create_user(user: UserCreate, db_path: Optional[str] = Query("orders.db")):
     db = OrderDatabase(db_path)
@@ -23,6 +28,26 @@ def create_user(user: UserCreate, db_path: Optional[str] = Query("orders.db")):
         return {"id": user_id, "username": user.username}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/users")
+def list_users(db_path: Optional[str] = Query("data/users.json")):
+    db = OrderDatabase(db_path)
+    try:
+        if db.is_json:
+            import json
+            with open(db.db_path, "r") as f:
+                data = json.load(f)
+            return {"users": data.get("users", [])}
+        else:
+            with __import__("sqlite3").connect(db.db_path) as conn:
+                conn.row_factory = __import__("sqlite3").Row
+                cursor = conn.cursor()
+                cursor.execute("SELECT id, username, email FROM users")
+                users = [dict(row) for row in cursor.fetchall()]
+                return {"users": users}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/orders")
