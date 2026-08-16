@@ -1,16 +1,4 @@
 def calculate_order_total(items, apply_discount=False):
-    """Calculates the total cost of an order with optional discount.
-    
-    Args:
-        items (List): List of dictionaries with 'price' and 'quantity' keys
-        apply_discount (bool): Whether to apply discount
-        
-    Returns:
-        float: Total order amount
-        
-    Raises:
-        ValueError: If items list is empty or items have invalid values
-    """
     
     if not items:
         raise ValueError("Items list cannot be empty")
